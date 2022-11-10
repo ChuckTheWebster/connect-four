@@ -57,7 +57,20 @@ function makeHtmlBoard() {
 
 function findSpotForCol(x) {
   // TODO: write the real version of this, rather than always returning 5
-  return 5;
+  let bottomEmpty;
+  let highestNonEmpty = board.findIndex(row => row[x] !== null);
+
+  if (highestNonEmpty === -1) {
+    bottomEmpty = board.length - 1;
+  } else {
+    bottomEmpty = highestNonEmpty - 1;
+  }
+
+  if (bottomEmpty === -1) {
+    return null;
+  } else {
+    return bottomEmpty;
+  }
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
@@ -80,29 +93,25 @@ function endGame(msg) {
 /** handleClick: handle click of column top to play piece */
 
 function handleClick(evt) {
-  // get x from ID of clicked cell
-  var x = +evt.target.id;
-
-  // get next spot in column (if none, ignore click)
-  var y = findSpotForCol(x);
+  let x = +evt.target.id;
+  let y = findSpotForCol(x);
   if (y === null) {
     return;
   }
 
-  // place piece in board and add to HTML table
-  // TODO: add line to update in-memory board
   placeInTable(y, x);
+  board[y][x] = (currPlayer === 1) ? 'p1' : 'p2';
 
-  // check for win
   if (checkForWin()) {
     return endGame(`Player ${currPlayer} won!`);
   }
 
-  // check for tie
-  // TODO: check if all cells in board are filled; if so call, call endGame
+  let filled = board.every(row => row.every(cell => cell !== null));
+  if (filled) {
+    endGame('Game over. Everyone loses.');
+  }
 
-  // switch players
-  // TODO: switch currPlayer 1 <-> 2
+  currPlayer = (currPlayer === 1) ? 2 : 1;
 }
 
 /** checkForWin: check board cell-by-cell for "does a win start here?" */
