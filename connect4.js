@@ -100,7 +100,7 @@ function handleClick(evt) {
   }
 
   placeInTable(y, x);
-  board[y][x] = (currPlayer === 1) ? 'p1' : 'p2';
+  board[y][x] = (currPlayer === 1) ? 1 : 2;
 
   if (checkForWin()) {
     return endGame(`Player ${currPlayer} won!`);
@@ -124,9 +124,15 @@ function checkForWin() {
    * currPlayer
    */
   function _win(cells) {
+    //[y,x]
+    let cellsAreValid = cells.every(cell => cell[0] < HEIGHT && cell[0] >= 0 && cell[1] < WIDTH && cell[1] >= 0);
 
-    // TODO: Check four cells to see if they're all legal & all color of current
-    // player
+    if (!cellsAreValid) {
+      return false;
+    }
+
+    let cellsMatch = cells.every(cell => board[cell[0]][cell[1]] === currPlayer);
+    return cellsMatch;
 
   }
 
