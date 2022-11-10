@@ -56,21 +56,18 @@ function makeHtmlBoard() {
 /** findSpotForCol: given column x, return bottom empty y (null if filled) */
 
 function findSpotForCol(x) {
-  // TODO: write the real version of this, rather than always returning 5
   let bottomEmpty;
   let highestNonEmpty = board.findIndex(row => row[x] !== null);
 
   if (highestNonEmpty === -1) {
     bottomEmpty = board.length - 1;
+  } else if (highestNonEmpty === 0) {
+    return null;
   } else {
     bottomEmpty = highestNonEmpty - 1;
   }
 
-  if (bottomEmpty === -1) {
-    return null;
-  } else {
-    return bottomEmpty;
-  }
+  return bottomEmpty;
 }
 
 /** placeInTable: update DOM to place piece into HTML table of board */
@@ -87,7 +84,7 @@ function placeInTable(y, x) {
 /** endGame: announce game end */
 
 function endGame(msg) {
-  // TODO: pop up alert message
+  alert(msg);
 }
 
 /** handleClick: handle click of column top to play piece */
@@ -108,7 +105,7 @@ function handleClick(evt) {
 
   let filled = board.every(row => row.every(cell => cell !== null));
   if (filled) {
-    endGame('Game over. Everyone loses.');
+    return endGame('Game over. Everyone loses.');
   }
 
   currPlayer = (currPlayer === 1) ? 2 : 1;
@@ -124,7 +121,6 @@ function checkForWin() {
    * currPlayer
    */
   function _win(cells) {
-    //[y,x]
     let cellsAreValid = cells.every(cell => cell[0] < HEIGHT && cell[0] >= 0 && cell[1] < WIDTH && cell[1] >= 0);
 
     if (!cellsAreValid) {
@@ -133,25 +129,15 @@ function checkForWin() {
 
     let cellsMatch = cells.every(cell => board[cell[0]][cell[1]] === currPlayer);
     return cellsMatch;
-
   }
 
-  // using HEIGHT and WIDTH, generate "check list" of coordinates
-  // for 4 cells (starting here) for each of the different
-  // ways to win: horizontal, vertical, diagonalDR, diagonalDL
-  for (var y = 0; y < HEIGHT; y++) {
-    for (var x = 0; x < WIDTH; x++) {
-      // TODO: assign values to the below variables for each of the ways to win
-      // horizontal has been assigned for you
-      // each should be an array of 4 cell coordinates:
-      // [ [y, x], [y, x], [y, x], [y, x] ]
-
+  for (let y = 0; y < HEIGHT; y++) {
+    for (let x = 0; x < WIDTH; x++) {
       let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3]];
-      let vert;
-      let diagDL;
-      let diagDR;
+      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x]];
+      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3]];
+      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3]];
 
-      // find winner (only checking each win-possibility as needed)
       if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
         return true;
       }
